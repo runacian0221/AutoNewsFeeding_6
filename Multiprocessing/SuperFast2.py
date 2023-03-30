@@ -2,6 +2,7 @@ import os
 import sys
 import grequests
 import requests
+import json
 import pandas as pd
 import multiprocessing
 import concurrent.futures
@@ -68,7 +69,7 @@ class DaumNewsCrawler:
         self.date = date
         self.data_df = pd.DataFrame(columns=[
                                     'platform', 'main_category', 'sub_category',
-                                    'title', 'content', 'writer', 'writed_at', 'news_agency', 'url'])
+                                    'title', 'content', 'writer', 'writed_at', 'url', 'news_agency', 'sentiment'])
         self.params = {}
 
     # 마지막 페이지 번호를 찾기 위한 함수이다.
@@ -98,12 +99,14 @@ class DaumNewsCrawler:
 
     # 추출한 뉴스 게시글 URL에서 정보를 수집한다.
     def crawling(self):
+        print('crawling')
         reqs = (grequests.get(link) for link in self.news_list)
         resp = grequests.map(reqs)
 
         for r in resp:
             data = []
             soup = BeautifulSoup(r.text, 'lxml')
+            url = r.url
             title = soup.select_one('.head_view > .tit_view').text
             writer = soup.select('.head_view > .info_view > .txt_info')[0].text
             writer = writer.split()[0]
@@ -118,18 +121,37 @@ class DaumNewsCrawler:
                 content = "내용 없음"
             content = ' '.join(content.split())
             news_agency = soup.select_one('#kakaoServiceLogo').text
-            # content = re.sub(f'{news_agency}', "", content)
-            # content = re.sub(f'{writer}', "", content)
-            # content = re.sub(f'{writed_at}', "", content)
-            url = soup.select_one('meta[property="og:url"]')['content']
-            data += '다음뉴스', self.CATEGORIES[self.main_category][0], \
+
+            news_id = r.url.split('/')[-1]
+            base_url_sticker = 'https://action.daum.net/apis/v1/reactions/home?itemKey={}'
+            sticker_url = base_url_sticker.format(news_id)
+
+            header = {
+            "User-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36",
+            "referer": sticker_url,
+            'authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmb3J1bV9rZXkiOiJuZXdzIiwidXNlcl92aWV3Ijp7ImlkIjotOTE3MDQyMTUsImljb24iOiJodHRwczovL3QxLmRhdW1jZG4ubmV0L3Byb2ZpbGUvbDl0QlVMeW82X0EwIiwicHJvdmlkZXJJZCI6IkRBVU0iLCJkaXNwbGF5TmFtZSI6IuyImCJ9LCJncmFudF90eXBlIjoiYWxleF9jcmVkZW50aWFscyIsInNjb3BlIjpbXSwiZXhwIjoxNjgwMTQ5NDQxLCJhdXRob3JpdGllcyI6WyJST0xFX0lOVEVHUkFURUQiLCJST0xFX0RBVU0iLCJST0xFX0lERU5USUZJRUQiLCJST0xFX1VTRVIiXSwianRpIjoiMzI0ZTliMjktMjNiOC00ZTk2LTg3YTktZTZkODQ4MzBkZWFmIiwiZm9ydW1faWQiOi05OSwiY2xpZW50X2lkIjoiMjZCWEF2S255NVdGNVowOWxyNWs3N1k4In0.KL6vzQI3b9C7Zrtlspe5e2oW01as2SAg4Cp5NfGKZA4'}
+            raw = requests.get(sticker_url, headers=header)
+
+            s_jsonData = json.loads(raw.text)
+            s_jsonData
+ 
+            sentiment = {"추천해요" : 0, "좋아요" : 0, "감동이에요" : 0, "화나요" : 0, "슬퍼요" : 0}
+ 
+            sentiment['좋아요'] = s_jsonData['item']['stats']['LIKE']
+            sentiment['감동이에요'] = s_jsonData['item']['stats']['IMPRESS']
+            sentiment['슬퍼요'] = s_jsonData['item']['stats']['SAD']
+            sentiment['화나요'] = s_jsonData['item']['stats']['ANGRY']
+            sentiment['추천해요'] = s_jsonData['item']['stats']['RECOMMEND']
+            content = re.sub(f'{news_agency}')
+            data += '다음', self.CATEGORIES[self.main_category][0], \
                 self.CATEGORIES[self.main_category][1][self.sub_category], \
-                title, content, writer, writed_at, news_agency, url
+                title, content, writer, writed_at, url, news_agency, sentiment
             self.data_df.loc[self.index] = data
             self.index += 1
 
     # 수집한 정보를 csv로 저장하는 함수이다.
     def save(self):
+        print('def save')
         self.data_df.to_csv(
             f'./{self.CATEGORIES[self.main_category][0]}_{self.CATEGORIES[self.main_category][1][self.sub_category]}_{self.date}.csv')
 
@@ -161,7 +183,7 @@ def combine_all_csv():
 
     total_csv = pd.DataFrame(columns=[
         'platform', 'main_category', 'sub_category',
-        'title', 'content', 'writer', 'writed_at', 'news_agency'
+        'title', 'content', 'writer', 'writed_at', 'url', 'news_agency', 'sentiment'
     ])
     for csv in csv_list:
         df = pd.read_csv(csv, index_col=0)
@@ -176,7 +198,7 @@ def combine_all_csv():
 # 처음 실행되는 메인 함수이다.
 if __name__ == '__main__':
     # 날짜 리스트를 가져온다.
-    date_list = get_date_list('20230201', '20230203')
+    date_list = get_date_list('20230201', '20230316')
     # 카테고리 확인을 위한 인스턴스를 생성한다.
     sample = DaumNewsCrawler('economic', 'finance', '20230201')
     # 크롤링을 위해 생성된 인스턴스를 저장할 리스트
