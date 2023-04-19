@@ -26,17 +26,6 @@
 |   <img src="https://user-images.githubusercontent.com/123911214/222653423-27f43572-8729-4fa1-be32-95e7b439c46a.png" width="200" height="50"/>   |   <img src="https://user-images.githubusercontent.com/123911214/232716532-48519665-430b-422d-ad33-102cc5c5b95c.png" width="150" height="50"/>   |   <img src="https://user-images.githubusercontent.com/123911214/232717251-f45d3653-4238-4efb-abba-cd7f5acfc5c8.png" width="150" height="100"/>   | <img src="https://user-images.githubusercontent.com/123911214/232713662-5fdf38b5-355c-4de0-a9d2-4d105e137d82.png" width="100" height="100"/> | <img src="https://user-images.githubusercontent.com/123911214/232714129-f0f6392b-3d85-4cf7-83d7-545092eac345.png" width="100" height="50"/> | <img src="https://user-images.githubusercontent.com/123911214/232715045-ebabb5b7-5f06-4aef-934b-ca6d1b209098.png" width="100" height="100"/> | 
 <br>
 
-## 📚기술 스택
-### Environment
-<img src="https://img.shields.io/badge/visual studio code-007ACC?style=for-the-badge&logo=visualstudiocode&logoColor=white"> <img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white"> <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white"> <img src="https://img.shields.io/badge/amazon ec2-FF9900?style=for-the-badge&logo=amazonec2&logoColor=white">
-<br>
-### Development
-<img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white"> <img src="https://img.shields.io/badge/scikit learn-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=white"> <img src="https://img.shields.io/badge/pandas-150458?style=for-the-badge&logo=pandas&logoColor=white">
-<br>
-### Communication
-<img src="https://img.shields.io/badge/slack-4A154B?style=for-the-badge&logo=slack&logoColor=white"> <img src="https://img.shields.io/badge/notion-000000?style=for-the-badge&logo=notion&logoColor=white">
-
-
 ## 🎞인사이트
 ● 출·퇴근길 간단하게 뉴스를 보기 위해, 다음 뉴스데이터 정보를 수집하고 요약한 자료를<br>
   &nbsp;&nbsp;이메일로 자동 발송하는 시스템을 구축<br>
@@ -48,12 +37,10 @@
 1. Beautifulsoup을 이용해 다음 경제뉴스기사 클롤링<br>
 2. Multiprocessing으로 90일치의 데이터를 추출하고 csv파일로 저장<br>
 3. Cleansing 코드를 작성하고, 작성한 코드를 이용하여 뉴스의 불필요한 특수기호, 불용어를 처리<br>
-4. LDA로 뉴스기사의 토픽키워드 기준으로 기사요약<br>
-5. HTML 문서에 요약한 뉴스기사 데이터를 삽입<br>
-6. Email로 메일을 전송<br>
-7. Crontab을 이용하여 자동화 스케쥴링<br>
+4. Nltk를 이용해 기사문서 tokenize, Konlpy의 mecab으로 품사태깅 tagging(동사, 명사)<br>
+5. Gensim의 corpora를 이용해 단어의 출현 빈도를 계산하고, 단어마다 index 부여<br>
+6. Gensim의 LDA를 이용해 뉴스기사의 토픽키워드 기준으로 순위를 매겨 top3문장으로 기사요약<br>
+7. HTML 문서에 요약한 뉴스기사 데이터를 삽입<br>
+8. Email로 메일을 전송<br>
+9. Crontab을 이용하여 자동화 스케쥴링
 <br>
-<br>
-
-
-
