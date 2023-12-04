@@ -34,7 +34,7 @@
 
 ## 💻프로세스
 <img src="https://user-images.githubusercontent.com/123911214/232953934-48957ebc-1267-42e0-be62-051af47acdf0.png" width="600" height="300"/>
-1. Beautifulsoup을 이용해 다음 경제뉴스기사 클롤링<br>
+1. Beautifulsoup을 이용해 다음 경제뉴스기사 크롤링<br>
 2. Multiprocessing으로 90일치의 데이터를 추출하고 csv파일로 저장<br>
 3. Cleansing 코드를 작성하고, 작성한 코드를 이용하여 뉴스의 불필요한 특수기호, 불용어를 처리<br>
 4. Nltk를 이용해 기사문서 tokenize, Konlpy의 mecab으로 품사태깅 tagging(동사, 명사)<br>
